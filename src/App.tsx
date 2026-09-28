@@ -10,8 +10,8 @@ import { Frame, AnimationConfig as AnimConfig } from './types'
 function App() {
   const [frames, setFrames] = useState<Frame[]>([])
   const [animConfig, setAnimConfig] = useState<AnimConfig>({
-    id: 'new_animation',
-    name: 'New Animation',
+    id: 'idle',
+    name: 'Idle',
     frames: [],
     centerX: 0,
     centerY: 0,
@@ -19,49 +19,43 @@ function App() {
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null)
   const [playingPreview, setPlayingPreview] = useState(false)
 
-  const handleAddFrames = (newFrames: Frame[]) => {
-    const updatedFrames = [...frames, ...newFrames]
-    setFrames(updatedFrames)
-    // Update animation config frames array with durations
-    const frameDurations = updatedFrames.map(f => f.duration)
-    setAnimConfig(prev => ({
+  const updateConfigFrames = (nextFrames: Frame[]) => {
+    setAnimConfig((prev) => ({
       ...prev,
-      frames: frameDurations
+      frames: nextFrames.map((frame) => frame.duration),
     }))
   }
 
-  const handleRemoveFrame = (frameId: string) => {
-    const updatedFrames = frames.filter(f => f.id !== frameId)
+  const handleAddFrames = (newFrames: Frame[]) => {
+    const updatedFrames = [...frames, ...newFrames]
     setFrames(updatedFrames)
-    const frameDurations = updatedFrames.map(f => f.duration)
-    setAnimConfig(prev => ({
-      ...prev,
-      frames: frameDurations
-    }))
+    updateConfigFrames(updatedFrames)
+  }
+
+  const handleRemoveFrame = (frameId: string) => {
+    const updatedFrames = frames.filter((f) => f.id !== frameId)
+    setFrames(updatedFrames)
+    updateConfigFrames(updatedFrames)
     setSelectedFrameId(null)
   }
 
   const handleUpdateFrameDuration = (frameId: string, duration: number) => {
-    const updatedFrames = frames.map(f =>
-      f.id === frameId ? { ...f, duration } : f
+    const updatedFrames = frames.map((f) =>
+      f.id === frameId ? { ...f, duration } : f,
     )
     setFrames(updatedFrames)
-    const frameDurations = updatedFrames.map(f => f.duration)
-    setAnimConfig(prev => ({
-      ...prev,
-      frames: frameDurations
-    }))
+    updateConfigFrames(updatedFrames)
   }
 
   const handleConfigChange = (config: Partial<AnimConfig>) => {
-    setAnimConfig(prev => ({ ...prev, ...config }))
+    setAnimConfig((prev) => ({ ...prev, ...config }))
   }
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>🎬 MonkeySheet Animation Editor</h1>
-        <p>Create and export sprite animations in MonkeySheet format</p>
+        <p>Create and export sprite animations in a JSON structure aligned with MonkeySheet</p>
       </header>
 
       <div className="app-container">
