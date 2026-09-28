@@ -1,0 +1,50 @@
+.frame-loader {
+  width: 100%;
+}
+
+.drag-area {
+  position: relative;
+  border: 2px dashed var(--color-border);
+  border-radius: 0.5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.drag-area:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.drag-area.active {
+  border-color: var(--color-primary);
+  background-color: rgba(99, 102, 241, 0.15);
+  transform: scale(1.02);
+}
+
+.drag-content {
+  pointer-events: none;
+}
+
+.drag-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.drag-text {
+  font-weight: 500;
+  margin: 0.5rem 0 0.25rem;
+  color: var(--color-text);
+}
+
+.drag-subtext {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.file-input {
+  display: none;
+}
