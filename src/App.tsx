@@ -98,6 +98,7 @@ function App() {
             <ExportPanel
               animConfig={animConfig}
               frameCount={frames.length}
+              frames={frames}
             />
           </section>
         </aside>

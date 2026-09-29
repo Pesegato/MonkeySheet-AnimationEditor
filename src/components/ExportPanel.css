@@ -60,3 +60,7 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.btn-spritesheet {
+  background-color: var(--color-success);
+}
