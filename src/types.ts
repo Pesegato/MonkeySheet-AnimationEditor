@@ -1,5 +1,6 @@
 export interface Frame {
   id: string
+  name: string
   imageUrl: string
   duration: number // milliseconds
 }

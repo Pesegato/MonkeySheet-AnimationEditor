@@ -20,6 +20,7 @@ export default function FrameLoader({ onAddFrames }: FrameLoaderProps) {
           const imageUrl = e.target?.result as string
           newFrames.push({
             id: `frame_${Date.now()}_${index}`,
+            name: file.name, // ← nuovo campo
             imageUrl,
             duration: 100, // default 100ms per frame
           })

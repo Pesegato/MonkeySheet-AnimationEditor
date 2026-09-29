@@ -28,6 +28,7 @@ function App() {
 
   const handleAddFrames = (newFrames: Frame[]) => {
     const updatedFrames = [...frames, ...newFrames]
+      .sort((a, b) => a.name.localeCompare(b.name)) // ← ordina per nome
     setFrames(updatedFrames)
     updateConfigFrames(updatedFrames)
   }
