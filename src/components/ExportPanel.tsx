@@ -55,61 +55,49 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
     }
   }
 
-  const generateSpritesheet = () => {
+  const generateSpritesheet = async () => {
     if (frames.length === 0) {
       alert('Please load frames first')
       return
     }
 
-    const firstFrame = frames[0]
-    const cellSize = {
-      width: parseInt(firstFrame.imageUrl.match(/width=(\d+)/)?.[1] || '128') || 128,
-      height: parseInt(firstFrame.imageUrl.match(/height=(\d+)/)?.[1] || '128') || 128
-    }
+    // 1. Load all images in parallel
+    const images = await Promise.all(
+      frames.map((frame) => new Promise<HTMLImageElement>((resolve) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.src = frame.imageUrl
+      }))
+    )
 
-    const gridCols = Math.ceil(Math.sqrt(frames.length))
+    // 2. Use dimensions of first frame
+    const cellW = images[0].naturalWidth
+    const cellH = images[0].naturalHeight
+
+    // 3. Create canvas with transparent background
+    const gridCols = Math.ceil(Math.sqrt(images.length))
+    const gridRows = Math.ceil(images.length / gridCols)
     const canvas = document.createElement('canvas')
-    canvas.width = cellSize.width * gridCols
-    canvas.height = cellSize.height * Math.ceil(frames.length / gridCols)
-    const ctx = canvas.getContext('2d')
+    canvas.width = cellW * gridCols
+    canvas.height = cellH * gridRows
+    const ctx = canvas.getContext('2d')!
 
-    if (!ctx) return
-
-    frames.forEach((frame, index) => {
-      const row = Math.floor(index / gridCols)
+    // 4. Draw images (no background, no numbers)
+    images.forEach((img, index) => {
       const col = index % gridCols
-      const x = col * cellSize.width
-      const y = row * cellSize.height
-
-      // Draw cell background
-      ctx.fillStyle = '#1e293b'
-      ctx.fillRect(x, y, cellSize.width, cellSize.height)
-
-      // Draw frame image
-      const img = new Image()
-      img.crossOrigin = 'anonymous'
-      img.src = frame.imageUrl
-      img.onload = () => {
-        const scale = Math.min(
-          cellSize.width / img.width,
-          cellSize.height / img.height
-        )
-        const dx = x + (cellSize.width - img.width * scale) / 2
-        const dy = y + (cellSize.height - img.height * scale) / 2
-        ctx.drawImage(img, dx, dy, img.width * scale, img.height * scale)
-
-        // Draw frame number
-        ctx.fillStyle = '#e2e8f0'
-        ctx.font = '12px sans-serif'
-        ctx.textAlign = 'center'
-        ctx.fillText((index + 1).toString(), x + cellSize.width / 2, y + cellSize.height - 4)
-      }
+      const row = Math.floor(index / gridCols)
+      const x = col * cellW
+      const y = row * cellH
+      const scale = Math.min(cellW / img.width, cellH / img.height)
+      const dx = x + (cellW - img.width * scale) / 2
+      const dy = y + (cellH - img.height * scale) / 2
+      ctx.drawImage(img, dx, dy, img.width * scale, img.height * scale)
     })
 
-    // Download canvas as PNG
+    // 5. Download PNG
     const link = document.createElement('a')
     link.download = `${animConfig.id || 'animation'}.png`
-    link.href = canvas.toDataURL()
+    link.href = canvas.toDataURL('image/png')
     link.click()
   }
 
