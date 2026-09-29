@@ -63,8 +63,8 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
 
     const firstFrame = frames[0]
     const cellSize = {
-      width: firstFrame.imageUrl.match(/width=(d+)/)?.[1] || 128,
-      height: firstFrame.imageUrl.match(/height=(d+)/)?.[1] || 128
+      width: parseInt(firstFrame.imageUrl.match(/width=(\d+)/)?.[1] || '128') || 128,
+      height: parseInt(firstFrame.imageUrl.match(/height=(\d+)/)?.[1] || '128') || 128
     }
 
     const gridCols = Math.ceil(Math.sqrt(frames.length))
