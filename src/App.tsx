@@ -17,9 +17,12 @@ function App() {
   const [selectedAnimationIdx, setSelectedAnimationIdx] = useState<number>(0)
   const [playingPreview, setPlayingPreview] = useState(false)
 
-  const handleAddToPalette = (newFrames: Frame[]) => {
-    setPalette((prev) => [...prev, ...newFrames])
-  }
+const handleAddToPalette = (newFrames: Frame[]) => {
+  setPalette((prev) => {
+    const combined = [...prev, ...newFrames]
+    return combined.sort((a, b) => a.name.localeCompare(b.name))
+  })
+}
 
   const addFrameFromPalette = useCallback(
     (paletteIndex: number) => {
