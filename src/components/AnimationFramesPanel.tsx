@@ -23,7 +23,7 @@ const AnimationFramesPanel: React.FC<AnimationFramesPanelProps> = ({ animation, 
         {animationFrames.map((frame, frameIdx) => (
           <div key={`${animation.id}-${frameIdx}`} className="frame-item">
             <div className="frame-thumbnail">
-              <img src={frame.src} alt={`Frame ${frameIdx + 1}`} />
+              <img src={frame.imageUrl} alt={`Frame ${frameIdx + 1}`} />
               <span className="frame-pos-badge">{frameIdx + 1}</span>
             </div>
             <div className="frame-info">
