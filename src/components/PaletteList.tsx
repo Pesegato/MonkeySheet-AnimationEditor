@@ -3,13 +3,11 @@ import { Frame } from '../types'
 
 interface PaletteListProps {
   items: Frame[]
-  selectedItemIdx: number | null
   onAddToAnimation: (paletteIndex: number) => void
 }
 
 export default function PaletteList({
   items,
-  selectedItemIdx,
   onAddToAnimation,
 }: PaletteListProps) {
   if (items.length === 0) {
@@ -26,7 +24,7 @@ export default function PaletteList({
       {items.map((item, index) => (
         <div
           key={item.id}
-          className={`palette-item ${selectedItemIdx === index ? 'selected' : ''}`}
+          className="palette-item"
           onClick={() => onAddToAnimation(index)}
         >
           <div className="palette-thumbnail">

@@ -15,7 +15,6 @@ function App() {
     { id: generateUniqueId(), frames: [], centerX: 0, centerY: 0 },
   ])
   const [selectedAnimationIdx, setSelectedAnimationIdx] = useState<number>(0)
-  const [selectedPaletteItemIdx, setSelectedPaletteItemIdx] = useState<number | null>(null)
   const [playingPreview, setPlayingPreview] = useState(false)
 
   const handleAddToPalette = (newFrames: Frame[]) => {
@@ -131,7 +130,6 @@ function App() {
             <h2>Image Palette ({palette.length})</h2>
             <PaletteList
               items={palette}
-              selectedItemIdx={selectedPaletteItemIdx}
               onAddToAnimation={addFrameFromPalette}
             />
           </section>
