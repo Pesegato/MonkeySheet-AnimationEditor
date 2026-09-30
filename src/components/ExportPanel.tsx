@@ -7,14 +7,21 @@ interface ExportPanelProps {
 }
 
 export default function ExportPanel({ animations, palette }: ExportPanelProps) {
-  const buildPayload = () => {
-    return animations.map((anim) => ({
+const buildPayload = () => {
+  return animations.map((anim) => {
+    const relativeFrames = anim.frames.map((frameIdx, i) => {
+      if (i === 0) return 0 // Primo frame: differenza 0
+      return frameIdx - anim.frames[i - 1] // Differenza rispetto al frame precedente
+    })
+    
+    return {
       id: anim.id,
-      frames: Array.from({ length: anim.frames.length }, (_, i) => i + 1), // 1-based progressive indices
+      frames: relativeFrames,
       centerX: anim.centerX,
       centerY: anim.centerY,
-    }))
-  }
+    }
+  })
+}
 
   const exportJson = () => {
     const payload = buildPayload()
