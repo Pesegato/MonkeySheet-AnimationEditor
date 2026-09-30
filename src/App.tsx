@@ -18,11 +18,26 @@ function App() {
   const [playingPreview, setPlayingPreview] = useState(false)
 
 const handleAddToPalette = (newFrames: Frame[]) => {
-  setPalette((prev) => {
-    const combined = [...prev, ...newFrames]
-    return combined.sort((a, b) => a.name.localeCompare(b.name))
+  setPalette((prevPalette) => {
+    const combined = [...prevPalette, ...newFrames]
+    const sorted = [...combined].sort((a, b) => a.name.localeCompare(b.name))
+    
+    // Aggiorna gli indici nelle animazioni esistenti
+    setAnimations((prevAnims) =>
+      prevAnims.map(anim => ({
+        ...anim,
+        frames: anim.frames.map(oldIdx => {
+          const oldFrame = combined[oldIdx]
+          if (!oldFrame) return oldIdx
+          return sorted.findIndex(f => f.id === oldFrame.id)
+        })
+      }))
+    )
+    
+    return sorted
   })
 }
+
 
   const addFrameFromPalette = useCallback(
     (paletteIndex: number) => {
