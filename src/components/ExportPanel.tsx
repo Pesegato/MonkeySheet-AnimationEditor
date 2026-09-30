@@ -10,8 +10,8 @@ export default function ExportPanel({ animations, palette }: ExportPanelProps) {
 const buildPayload = () => {
   return animations.map((anim) => {
     const relativeFrames = anim.frames.map((frameIdx, i) => {
-      if (i === 0) return 0 // Primo frame: differenza 0
-      return frameIdx - anim.frames[i - 1] // Differenza rispetto al frame precedente
+      const prevIdx = i === 0 ? 0 : anim.frames[i - 1]
+      return frameIdx - prevIdx
     })
     
     return {
@@ -22,6 +22,7 @@ const buildPayload = () => {
     }
   })
 }
+
 
   const exportJson = () => {
     const payload = buildPayload()
