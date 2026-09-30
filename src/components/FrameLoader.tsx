@@ -3,10 +3,10 @@ import './FrameLoader.css'
 import { Frame } from '../types'
 
 interface FrameLoaderProps {
-  onAddFrames: (frames: Frame[]) => void
+  onAddToPalette: (frames: Frame[]) => void
 }
 
-export default function FrameLoader({ onAddFrames }: FrameLoaderProps) {
+export default function FrameLoader({ onAddToPalette }: FrameLoaderProps) {
   const [dragActive, setDragActive] = useState(false)
 
   const handleFiles = (files: FileList) => {
@@ -19,15 +19,18 @@ export default function FrameLoader({ onAddFrames }: FrameLoaderProps) {
         reader.onload = (e) => {
           const imageUrl = e.target?.result as string
           newFrames.push({
-            id: `frame_${Date.now()}_${index}`,
-            name: file.name, // ← nuovo campo
+            id: `palette_${Date.now()}_${index}`,
+            name: file.name,
             imageUrl,
-            duration: 100, // default 100ms per frame
+            duration: 100, // default duration for animation frames
           })
           loadedCount++
 
-          if (loadedCount === Array.from(files).filter(f => f.type.startsWith('image/')).length) {
-            onAddFrames(newFrames)
+          const imageCount = Array.from(files).filter(
+            (f) => f.type.startsWith('image/'),
+          ).length
+          if (loadedCount === imageCount) {
+            onAddToPalette(newFrames)
           }
         }
         reader.readAsDataURL(file)
