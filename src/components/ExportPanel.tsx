@@ -1,6 +1,5 @@
 import './ExportPanel.css'
 import { AnimationConfig as AnimConfig, Frame } from '../types'
-import { saveAs } from 'file-saver'
 
 interface ExportPanelProps {
   animations: AnimConfig[]
@@ -40,39 +39,53 @@ export default function ExportPanel({ animations, palette }: ExportPanelProps) {
     }
   }
 
-  const generateSpritesheet = async () => {
-    if (palette.length === 0) {
-      alert('Please load images into the palette first')
-      return
-    }
-
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const maxCols = Math.ceil(Math.sqrt(palette.length))
-    const frameWidth = palette[0].width
-    const frameHeight = palette[0].height
-    canvas.width = maxCols * frameWidth
-    canvas.height = Math.ceil(palette.length / maxCols) * frameHeight
-
-    palette.forEach((image, idx) => {
-      const img = new Image()
-      img.src = image.src
-      img.onload = () => {
-        const col = idx % maxCols
-        const row = Math.floor(idx / maxCols)
-        ctx.drawImage(img, col * frameWidth, row * frameHeight)
-        if (idx === palette.length - 1) {
-          canvas.toBlob((blob) => {
-            if (blob) {
-              saveAs(blob, 'spritesheet.png')
-            }
-          })
-        }
-      }
-    })
+const generateSpritesheet = async () => {
+  if (palette.length === 0) {
+    alert('Please load images into the palette first')
+    return
   }
+
+  // Carica tutte le immagini per ottenere le dimensioni
+  const images = await Promise.all(
+    palette.map(
+      (frame) =>
+        new Promise<HTMLImageElement>((resolve) => {
+          const img = new Image()
+          img.onload = () => resolve(img)
+          img.src = frame.imageUrl
+        })
+    )
+  )
+
+  // Usa le dimensioni della prima immagine
+  const frameWidth = images[0].width
+  const frameHeight = images[0].height
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const maxCols = Math.ceil(Math.sqrt(palette.length))
+  canvas.width = maxCols * frameWidth
+  canvas.height = Math.ceil(palette.length / maxCols) * frameHeight
+
+  images.forEach((img, idx) => {
+    const col = idx % maxCols
+    const row = Math.floor(idx / maxCols)
+    ctx.drawImage(img, col * frameWidth, row * frameHeight)
+  })
+
+  canvas.toBlob((blob) => {
+    if (blob) {
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'spritesheet.png'
+      link.click()
+      URL.revokeObjectURL(url)
+    }
+  })
+}
 
   return (
     <div className="export-panel">

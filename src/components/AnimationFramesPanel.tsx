@@ -1,5 +1,6 @@
 import React from 'react'
 import './AnimationFramesPanel.css'
+import { Frame } from '../types'
 
 interface AnimationFramesPanelProps {
   animation: {

@@ -222,7 +222,7 @@ function App() {
             <h2>Export All</h2>
             <ExportPanel
               animations={animations}
-              paletteLength={palette.length}
+              palette={palette}
             />
           </section>
         </aside>
