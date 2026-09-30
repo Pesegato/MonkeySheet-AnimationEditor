@@ -19,16 +19,6 @@ export default function AnimationConfig({ config, onChange }: AnimationConfigPro
         />
       </div>
 
-      <div className="config-group">
-        <label>Animation Name</label>
-        <input
-          type="text"
-          value={config.name}
-          onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="My Animation"
-        />
-      </div>
-
       <div className="config-row">
         <div className="config-group">
           <label>Center X</label>

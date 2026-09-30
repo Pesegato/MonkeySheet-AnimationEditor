@@ -2,34 +2,19 @@ import './ExportPanel.css'
 import { Frame, AnimationConfig as AnimConfig } from '../types'
 
 interface ExportPanelProps {
-  animConfig: AnimConfig
+  animations: AnimConfig[]
   frameCount: number
   frames: Frame[]
 }
 
-export default function ExportPanel({ animConfig, frameCount, frames }: ExportPanelProps) {
+export default function ExportPanel({ animations, frameCount, frames }: ExportPanelProps) {
   const buildPayload = () => {
-    const frameSequence =
-      animConfig.frames.length > 0
-        ? animConfig.frames
-        : Array.from({ length: frameCount }, () => 100)
-
-    const gridCols = Math.ceil(Math.sqrt(frameCount))
-    const containerSize = gridCols
-
-    return {
-      containerName: animConfig.name || 'SpriteSheet',
-      containerSize,
-      animations: [
-        {
-          id: animConfig.id || 'animation',
-          name: animConfig.name || 'Animation',
-          frames: frameSequence,
-          centerX: animConfig.centerX || 0,
-          centerY: animConfig.centerY || 0,
-        },
-      ],
-    }
+    return animations.map((anim) => ({
+      id: anim.id,
+      frames: Array.from({ length: anim.frames.length }, (_, i) => i + 1), // 1-based progressive indices
+      centerX: anim.centerX,
+      centerY: anim.centerY,
+    }))
   }
 
   const exportJson = () => {
@@ -39,7 +24,7 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `${payload.animations[0].id}.json`
+    link.download = 'animations.json'
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -48,7 +33,7 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
     const payload = buildPayload()
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
-      alert('MonkeySheet JSON copied to clipboard')
+      alert('Animations JSON copied to clipboard')
     } catch (error) {
       console.error('Copy failed', error)
       alert('Unable to copy to clipboard')
@@ -96,7 +81,7 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
 
     // 5. Download PNG
     const link = document.createElement('a')
-    link.download = `${animConfig.id || 'animation'}.png`
+    link.download = frames.length > 0 ? `${animations[0]?.id || 'spritesheet'}.png` : 'spritesheet.png'
     link.href = canvas.toDataURL('image/png')
     link.click()
   }
@@ -104,10 +89,11 @@ export default function ExportPanel({ animConfig, frameCount, frames }: ExportPa
   return (
     <div className="export-panel">
       <div className="export-summary">
-        <p><strong>Container:</strong> {animConfig.name || 'SpriteSheet'}</p>
-        <p><strong>Animation ID:</strong> {animConfig.id || 'animation'}</p>
-        <p><strong>Frames:</strong> {frameCount}</p>
-        <p><strong>Center:</strong> ({animConfig.centerX}, {animConfig.centerY})</p>
+        <p><strong>Animations:</strong> {animations.length}</p>
+        <p><strong>Total Frames:</strong> {frameCount}</p>
+        <p>
+          <strong>Anim List:</strong> {animations.map(a => a.id).join(', ') || 'None'}
+        </p>
       </div>
 
       <div className="export-actions">

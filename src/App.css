@@ -130,3 +130,82 @@ body {
     width: 100%;
   }
 }
+
+/* Animations List */
+.animations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.anim-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.35rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+}
+
+.anim-item.selected {
+  background-color: rgba(99, 102, 241, 0.15);
+  border-color: var(--color-primary);
+}
+
+.anim-select-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  padding: 0.25rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anim-select-btn:hover {
+  color: var(--color-primary);
+}
+
+.anim-delete-btn {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.anim-delete-btn:hover:not(:disabled) {
+  opacity: 1;
+}
+
+.anim-delete-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.btn-add-animation {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgba(99, 102, 241, 0.1);
+  border: 1px dashed var(--color-primary);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 0.35rem;
+  transition: background-color 0.2s;
+}
+
+.btn-add-animation:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+}
