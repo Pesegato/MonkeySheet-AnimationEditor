@@ -167,7 +167,9 @@ const handleAddToPalette = (newFrames: Frame[]) => {
           <section className="panel">
             <h2>Animation Frames ({animationFrames.length})</h2>
             <div className="animation-frames-list">
-              {animationFrames.map((frame, frameIdx) => (
+              {animationFrames.map((frame, frameIdx) => {
+                  if (!frame) return null
+                  return (
                 <div key={`${selectedAnimationIdx}-${frameIdx}`} className="anim-frame-item">
                   <div className="anim-frame-thumbnail">
                     <img src={frame.imageUrl} alt={`Frame ${frameIdx + 1}`} />
@@ -184,7 +186,8 @@ const handleAddToPalette = (newFrames: Frame[]) => {
                     </button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
               {animationFrames.length === 0 && (
                 <p className="empty-hint">
                   Click an image in the palette to add frames

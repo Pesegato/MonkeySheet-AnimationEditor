@@ -61,6 +61,8 @@ export default function AnimationPreview({
     }
 
     const frame = frames[currentFrameIndex]
+    if (!frame) return
+
     const img = new Image()
     img.src = frame.imageUrl
     img.onload = () => {
