@@ -129,10 +129,9 @@ function App() {
 
           <section className="panel">
             <h2>Image Palette ({palette.length})</h2>
-            <FrameList
+            <PaletteList
               items={palette}
               selectedItemIdx={selectedPaletteItemIdx}
-              onSelectItem={setSelectedPaletteItemIdx}
               onAddToAnimation={addFrameFromPalette}
             />
           </section>

@@ -1,5 +1,5 @@
 import './ExportPanel.css'
-import { Frame, AnimationConfig as AnimConfig } from '../types'
+import { AnimationConfig as AnimConfig } from '../types'
 
 interface ExportPanelProps {
   animations: AnimConfig[]

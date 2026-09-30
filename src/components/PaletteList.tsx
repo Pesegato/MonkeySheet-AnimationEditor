@@ -4,14 +4,12 @@ import { Frame } from '../types'
 interface PaletteListProps {
   items: Frame[]
   selectedItemIdx: number | null
-  onSelectItem: (idx: number | null) => void
   onAddToAnimation: (paletteIndex: number) => void
 }
 
 export default function PaletteList({
   items,
   selectedItemIdx,
-  onSelectItem,
   onAddToAnimation,
 }: PaletteListProps) {
   if (items.length === 0) {
