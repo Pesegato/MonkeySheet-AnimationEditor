@@ -1,12 +1,13 @@
 import './ExportPanel.css'
-import { AnimationConfig as AnimConfig } from '../types'
+import { AnimationConfig as AnimConfig, Frame } from '../types'
+import { saveAs } from 'file-saver'
 
 interface ExportPanelProps {
   animations: AnimConfig[]
-  paletteLength: number
+  palette: Frame[]
 }
 
-export default function ExportPanel({ animations, paletteLength }: ExportPanelProps) {
+export default function ExportPanel({ animations, palette }: ExportPanelProps) {
   const buildPayload = () => {
     return animations.map((anim) => ({
       id: anim.id,
@@ -40,32 +41,44 @@ export default function ExportPanel({ animations, paletteLength }: ExportPanelPr
   }
 
   const generateSpritesheet = async () => {
-    if (paletteLength === 0) {
+    if (palette.length === 0) {
       alert('Please load images into the palette first')
       return
     }
 
-    // For spritesheet, we need actual image data from somewhere
-    // Since we only have animation indices now, let's collect unique palette indices used by all animations
-    const usedIndices = new Set<number>()
-    animations.forEach((anim) => {
-      anim.frames.forEach((idx) => usedIndices.add(idx))
-    })
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    // Load images - but we need the actual image sources
-    // This is a limitation with the new architecture where we separate palette from animation frames
-    alert(
-      'Spritesheet generation requires access to palette images.\n' +
-        'Consider exporting individual animations instead.',
-    )
-    return
+    const maxCols = Math.ceil(Math.sqrt(palette.length))
+    const frameWidth = palette[0].width
+    const frameHeight = palette[0].height
+    canvas.width = maxCols * frameWidth
+    canvas.height = Math.ceil(palette.length / maxCols) * frameHeight
+
+    palette.forEach((image, idx) => {
+      const img = new Image()
+      img.src = image.src
+      img.onload = () => {
+        const col = idx % maxCols
+        const row = Math.floor(idx / maxCols)
+        ctx.drawImage(img, col * frameWidth, row * frameHeight)
+        if (idx === palette.length - 1) {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              saveAs(blob, 'spritesheet.png')
+            }
+          })
+        }
+      }
+    })
   }
 
   return (
     <div className="export-panel">
       <div className="export-summary">
         <p><strong>Animations:</strong> {animations.length}</p>
-        <p><strong>Palette Size:</strong> {paletteLength}</p>
+        <p><strong>Palette Size:</strong> {palette.length}</p>
         <p>
           <strong>Anim List:</strong> {animations.map(a => a.id).join(', ') || 'None'}
         </p>

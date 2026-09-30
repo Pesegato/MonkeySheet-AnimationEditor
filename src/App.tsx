@@ -150,7 +150,7 @@ function App() {
             <h2>Animation Frames ({animationFrames.length})</h2>
             <div className="animation-frames-list">
               {animationFrames.map((frame, frameIdx) => (
-                <div key={frame.id} className="anim-frame-item">
+                <div key={`${selectedAnimationIdx}-${frameIdx}`} className="anim-frame-item">
                   <div className="anim-frame-thumbnail">
                     <img src={frame.imageUrl} alt={`Frame ${frameIdx + 1}`} />
                     <span className="frame-pos-badge">{frameIdx + 1}</span>
