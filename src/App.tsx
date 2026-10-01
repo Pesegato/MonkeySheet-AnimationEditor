@@ -1,167 +1,55 @@
-import { useState, useCallback } from 'react'
 import './App.css'
 import ImportPanel from './components/ImportPanel'
-
 import FrameLoader from './components/FrameLoader'
 import PaletteList from './components/PaletteList'
 import AnimationPreview from './components/AnimationPreview'
 import AnimationConfig from './components/AnimationConfig'
 import ExportPanel from './components/ExportPanel'
-import { Frame, AnimationConfig as AnimConfig } from './types'
-
-const generateUniqueId = () => `animation${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
+import { useAnimationEditor } from './hooks/useAnimationEditor'
 
 function App() {
-  const [palette, setPalette] = useState<Frame[]>([])
-  const [animations, setAnimations] = useState<AnimConfig[]>([
-    { id: generateUniqueId(), frames: [], centerX: 0, centerY: 0 },
-  ])
-  const [selectedAnimationIdx, setSelectedAnimationIdx] = useState<number>(0)
-  const [playingPreview, setPlayingPreview] = useState(false)
-
-const handleAddToPalette = (newFrames: Frame[]) => {
-  setPalette((prevPalette) => {
-    const combined = [...prevPalette, ...newFrames]
-    const sorted = [...combined].sort((a, b) => a.name.localeCompare(b.name))
-    
-    // Aggiorna gli indici nelle animazioni esistenti
-    setAnimations((prevAnims) =>
-      prevAnims.map(anim => ({
-        ...anim,
-        frames: anim.frames.map(oldIdx => {
-          const oldFrame = combined[oldIdx]
-          if (!oldFrame) return oldIdx
-          return sorted.findIndex(f => f.id === oldFrame.id)
-        })
-      }))
-    )
-    
-    return sorted
-  })
-}
-
-
-  const addFrameFromPalette = useCallback(
-    (paletteIndex: number) => {
-      if (
-        palette.length === 0 ||
-        paletteIndex < 0 ||
-        paletteIndex >= palette.length
-      )
-        return
-      setAnimations((prev) => {
-        const next = [...prev]
-        const anim = next[selectedAnimationIdx]
-        next[selectedAnimationIdx] = {
-          ...anim,
-          frames: [...anim.frames, paletteIndex],
-        }
-        return next
-      })
-    },
-    [selectedAnimationIdx, palette.length],
-  )
-
-  const removeFrameFromAnimation = useCallback(
-    (framePosition: number) => {
-      if (
-        framePosition < 0 ||
-        framePosition >=
-          animations[selectedAnimationIdx].frames.length
-      )
-        return
-      setAnimations((prev) => {
-        const next = [...prev]
-        const anim = { ...next[selectedAnimationIdx] }
-        anim.frames = anim.frames.filter((_, i) => i !== framePosition)
-        next[selectedAnimationIdx] = anim
-        return next
-      })
-    },
-    [
-      selectedAnimationIdx,
-      animations[selectedAnimationIdx]?.frames?.length ?? 0,
-    ],
-  )
-
-  const getAnimationFrames = () => {
-    const anim = animations[selectedAnimationIdx]
-    if (!anim || !anim.frames) return []
-    return anim.frames
-      .map((paletteIdx) => palette[paletteIdx])
-      .filter(Boolean)
-  }
-
-  const addAnimation = useCallback(() => {
-    const newAnim: AnimConfig = {
-      id: generateUniqueId(),
-      frames: [],
-      centerX: 0,
-      centerY: 0,
-    }
-    setAnimations((prev) => [...prev, newAnim])
-  const handleImportAnimations = (animations: AnimConfig[]) => {
-    setAnimations(animations)
-    setSelectedAnimationIdx(0)
-  }
-
-
-    setSelectedAnimationIdx(animations.length)
-  }, [animations.length])
-
-  const removeAnimation = useCallback(
-    (idx: number) => {
-      setAnimations((prev) => {
-        const next = prev.filter((_, i) => i !== idx)
-        if (selectedAnimationIdx >= next.length || selectedAnimationIdx === idx) {
-          setSelectedAnimationIdx(Math.max(0, idx - 1))
-        }
-        return next
-      })
-    },
-    [selectedAnimationIdx],
-  )
-
-  const handleConfigChange = (idx: number, config: Partial<AnimConfig>) => {
-    setAnimations((prev) =>
-      prev.map((anim, i) => (i === idx ? { ...anim, ...config } : anim)),
-    )
-  }
-
-  const currentAnim =
-    animations[selectedAnimationIdx] ??
-    animations[0] ?? { id: '', frames: [], centerX: 0, centerY: 0 }
+  const {
+    palette,
+    animations,
+    selectedAnimationIdx,
+    setSelectedAnimationIdx,
+    playingPreview,
+    setPlayingPreview,
+    handleAddToPalette,
+    removeFrameFromAnimation,
+    addAnimation,
+    handleImportAnimations,
+    removeAnimation,
+    getAnimationFrames,
+    handleConfigChange,
+  } = useAnimationEditor()
 
   const animationFrames = getAnimationFrames()
+  const currentAnim = animations[selectedAnimationIdx] ?? { id: '', frames: [], centerX: 0, centerY: 0 }
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🎬 MonkeySheet Animation Editor</h1>
-        <p>
-          Create and export sprite animations — [{animations.length} animation
-          {animations.length !== 1 ? 's' : ''}]
-        </p>
+        <h1>MonkeySheet Animation Editor</h1>
+        <p>Create sprite sheet animations compatible with MonkeySheet</p>
       </header>
-
       <div className="app-container">
-        {/* LEFT PANEL: Palette */}
+        {/* LEFT PANEL: Palette List */}
         <aside className="left-panel">
           <section className="panel">
-            <h2>Load Images</h2>
+            <h2>Frame Loader</h2>
             <FrameLoader onAddToPalette={handleAddToPalette} />
           </section>
-
           <section className="panel">
-            <h2>Image Palette ({palette.length})</h2>
+            <h2>Palette</h2>
             <PaletteList
-              items={palette}
-              onAddToAnimation={addFrameFromPalette}
+              palette={palette}
+              onAddToPalette={handleAddToPalette}
             />
           </section>
         </aside>
 
-        {/* CENTER PANEL: Preview + Animation Frames */}
+        {/* CENTER PANEL: Animation Preview, Animation Frames */}
         <main className="center-panel">
           <section className="panel">
             <h2>Animation Preview</h2>
@@ -176,24 +64,24 @@ const handleAddToPalette = (newFrames: Frame[]) => {
             <h2>Animation Frames ({animationFrames.length})</h2>
             <div className="animation-frames-list">
               {animationFrames.map((frame, frameIdx) => {
-                  if (!frame) return null
-                  return (
-                <div key={`${selectedAnimationIdx}-${frameIdx}`} className="anim-frame-item">
-                  <div className="anim-frame-thumbnail">
-                    <img src={frame.imageUrl} alt={`Frame ${frameIdx + 1}`} />
-                    <span className="frame-pos-badge">{frameIdx + 1}</span>
+                if (!frame) return null
+                return (
+                  <div key={`${selectedAnimationIdx}-${frameIdx}`} className="anim-frame-item">
+                    <div className="anim-frame-thumbnail">
+                      <img src={frame.imageUrl} alt={`Frame ${frameIdx + 1}`} />
+                      <span className="frame-pos-badge">{frameIdx + 1}</span>
+                    </div>
+                    <div className="anim-frame-info">
+                      <span className="frame-name">{frame.name}</span>
+                      <button
+                        className="btn-remove-frame"
+                        onClick={() => removeFrameFromAnimation(frameIdx)}
+                        title="Remove this frame"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
-                  <div className="anim-frame-info">
-                    <span className="frame-name">{frame.name}</span>
-                    <button
-                      className="btn-remove-frame"
-                      onClick={() => removeFrameFromAnimation(frameIdx)}
-                      title="Remove this frame"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
                 )
               })}
               {animationFrames.length === 0 && (
@@ -213,9 +101,7 @@ const handleAddToPalette = (newFrames: Frame[]) => {
               {animations.map((anim, idx) => (
                 <div
                   key={anim.id}
-                  className={`anim-item ${
-                    idx === selectedAnimationIdx ? 'selected' : ''
-                  }`}
+                  className={`anim-item ${idx === selectedAnimationIdx ? 'selected' : ''}`}
                 >
                   <button
                     className="anim-select-btn"
@@ -237,11 +123,11 @@ const handleAddToPalette = (newFrames: Frame[]) => {
             <button className="btn-add-animation" onClick={addAnimation}>
               + Add Animation
             </button>
+          </section>
+
           <section className="panel">
             <h2>Import Animations</h2>
             <ImportPanel onImport={handleImportAnimations} />
-          </section>
-
           </section>
 
           <section className="panel">
