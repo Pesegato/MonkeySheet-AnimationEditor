@@ -16,14 +16,14 @@ export default function ImportPanel({ onImport }: ImportPanelProps) {
       const reader = new FileReader()
       reader.onload = (e) => {
         try {
-          const json = JSON.parse(e.target?.result as string)
+          const jsonText = (e.target?.result as string).replace(/\/\/.*$/gm, '')
+          const json = JSON.parse(jsonText)
           if (Array.isArray(json)) {
             const animations: AnimConfig[] = json.map((anim) => {
               const frames = anim.frames.reduce((acc: number[], curr: number, i: number) => {
                 acc.push((i === 0 ? 0 : acc[i - 1]) + curr)
                 return acc
               }, [] as number[])
-
               return {
                 ...anim,
                 frames,
