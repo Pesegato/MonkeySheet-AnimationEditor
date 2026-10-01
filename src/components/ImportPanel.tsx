@@ -18,11 +18,12 @@ export default function ImportPanel({ onImport }: ImportPanelProps) {
         try {
           const json = JSON.parse(e.target?.result as string)
           if (Array.isArray(json)) {
-            const animations: AnimConfig[] = json.map((anim, idx) => {
-              const frames = anim.frames.reduce((acc, curr, i) => {
+            const animations: AnimConfig[] = json.map((anim) => {
+              const frames = anim.frames.reduce((acc: number[], curr: number, i: number) => {
                 acc.push((i === 0 ? 0 : acc[i - 1]) + curr)
                 return acc
               }, [] as number[])
+
               return {
                 ...anim,
                 frames,

@@ -16,6 +16,7 @@ function App() {
     playingPreview,
     setPlayingPreview,
     handleAddToPalette,
+    addFrameFromPalette,
     removeFrameFromAnimation,
     addAnimation,
     handleImportAnimations,
@@ -23,6 +24,7 @@ function App() {
     getAnimationFrames,
     handleConfigChange,
   } = useAnimationEditor()
+
 
   const animationFrames = getAnimationFrames()
   const currentAnim = animations[selectedAnimationIdx] ?? { id: '', frames: [], centerX: 0, centerY: 0 }
@@ -43,8 +45,8 @@ function App() {
           <section className="panel">
             <h2>Palette</h2>
             <PaletteList
-              palette={palette}
-              onAddToPalette={handleAddToPalette}
+              items={palette}
+              onAddToAnimation={addFrameFromPalette}
             />
           </section>
         </aside>
