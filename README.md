@@ -141,6 +141,16 @@ npm run preview
 
 ## Notes
 
+📥 **JSON Import**
+- Drag and drop a JSON file containing animation configurations
+- JSON format example:
+```json
+[
+  { "id": "idle", "frames": [0, 1, 1, 1], "centerX": 16, "centerY": 24 },
+  { "id": "walk", "frames": [0, 1, 1, 1], "centerX": 16, "centerY": 24 }
+]
+```
+
 This project is intentionally a lightweight editor focused on authoring animation metadata and previewing frame sequences. It is designed to help create animation definitions that are easy to integrate into a jMonkeyEngine + MonkeySheet workflow.
 
 ## Related Links

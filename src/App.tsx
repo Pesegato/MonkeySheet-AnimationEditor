@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react'
 import './App.css'
+import ImportPanel from './components/ImportPanel'
+
 import FrameLoader from './components/FrameLoader'
 import PaletteList from './components/PaletteList'
 import AnimationPreview from './components/AnimationPreview'
@@ -98,6 +100,12 @@ const handleAddToPalette = (newFrames: Frame[]) => {
       centerY: 0,
     }
     setAnimations((prev) => [...prev, newAnim])
+  const handleImportAnimations = (animations: AnimConfig[]) => {
+    setAnimations(animations)
+    setSelectedAnimationIdx(0)
+  }
+
+
     setSelectedAnimationIdx(animations.length)
   }, [animations.length])
 
@@ -229,6 +237,11 @@ const handleAddToPalette = (newFrames: Frame[]) => {
             <button className="btn-add-animation" onClick={addAnimation}>
               + Add Animation
             </button>
+          <section className="panel">
+            <h2>Import Animations</h2>
+            <ImportPanel onImport={handleImportAnimations} />
+          </section>
+
           </section>
 
           <section className="panel">
